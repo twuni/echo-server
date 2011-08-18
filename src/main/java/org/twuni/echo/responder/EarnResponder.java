@@ -1,5 +1,6 @@
 package org.twuni.echo.responder;
 
+import org.twuni.common.net.http.UrlEncodedParameters;
 import org.twuni.common.net.http.request.Request;
 import org.twuni.common.net.http.responder.Responder;
 import org.twuni.common.net.http.response.Response;
@@ -20,9 +21,10 @@ public class EarnResponder implements Responder {
 
 	@Override
 	public Response respondTo( Request request ) {
-		String content = new String( request.getContent() );
-		buffer.append( content );
-		Token token = treasury.create( content.length() );
+		UrlEncodedParameters parameters = new UrlEncodedParameters( new String( request.getContent() ) );
+		String input = parameters.get( "input" );
+		Token token = treasury.create( input.length() );
+		buffer.append( input );
 		return new Response( Status.OK, "text/plain", new ShareableToken( token ).toString() );
 	}
 

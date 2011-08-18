@@ -1,6 +1,7 @@
 package org.twuni.echo.responder;
 
 import org.twuni.common.crypto.rsa.PrivateKey;
+import org.twuni.common.net.http.UrlEncodedParameters;
 import org.twuni.common.net.http.request.Request;
 import org.twuni.common.net.http.responder.Responder;
 import org.twuni.common.net.http.response.Response;
@@ -26,7 +27,9 @@ public class RedeemResponder implements Responder {
 
 	@Override
 	public Response respondTo( Request request ) {
-		ShareableToken token = GSON.fromJson( new String( request.getContent() ), ShareableToken.class );
+		UrlEncodedParameters parameters = new UrlEncodedParameters( new String( request.getContent() ) );
+		String input = parameters.get( "token" );
+		ShareableToken token = GSON.fromJson( input, ShareableToken.class );
 		treasury.refresh( new SimpleToken( token.getTreasury(), PrivateKey.deserialize( token.getActionKey() ), PrivateKey.deserialize( token.getOwnerKey() ), token.getValue() ) );
 		String result = null;
 		synchronized( buffer ) {
